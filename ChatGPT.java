@@ -6,31 +6,36 @@ public class ChatGPT {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String input;
+  
 
         System.out.println("Start chatting! Type 'exit' to end the chat.");
 
+
+        System.out.println("Please briefly describe the persona of the chatbot:");
+        String systemContext = scanner.nextLine();
+
         while (true) {
             System.out.print("You: ");
-            input = scanner.nextLine();
+            String input = scanner.nextLine();
 
             if (input.equalsIgnoreCase("exit")) {
                 System.out.println("Chat ended.");
                 break;
             }
 
-            System.out.println("Bot: "+nextChat(input));
+            System.out.println("Bot: "+nextChat(systemContext, input));
         }
 
         scanner.close();
     }
  	
-    public static String nextChat(String prompt) {
+    public static String nextChat(String systemBehavior, String prompt) {
         String url = "https://api.openai.com/v1/chat/completions";
 
-        String apiKey = "MY_OPENAPI_KEY";
+        String apiKey="";
         //String model = "gpt-3.5-turbo";
         String model = "gpt-4o";
+
 
         try {
             URL obj = new URI(url).toURL();
@@ -40,7 +45,9 @@ public class ChatGPT {
             connection.setRequestProperty("Content-Type", "application/json");
 
             // The request body
-            String body = "{\"model\": \"" + model + "\", \"messages\": [{\"role\": \"user\", \"content\": \"" + prompt + "\"}]}";
+            String systemMessage = "{\"role\": \"system\", \"content\": \"" +    systemBehavior + "\"},";
+
+            String body = "{\"model\": \"" + model + "\", \"messages\": ["+systemMessage + "{\"role\": \"user\", \"content\": \"" + prompt + "\"}]}";
             connection.setDoOutput(true);
             OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
             writer.write(body);
