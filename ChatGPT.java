@@ -2,6 +2,8 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
+
 public class ChatGPT {
 
     public static void main(String[] args) {
@@ -65,7 +67,13 @@ public class ChatGPT {
             }
             br.close();
 
-            return getGPTResponse(response.toString());
+            System.out.println(getResponse(response.toString()).choices[0].message.role);
+            System.out.println(getResponse(response.toString()).choices[0].finishReason);
+            
+            
+
+            //return getGPTResponse(response.toString());
+            return getResponse(response.toString()).choices[0].message.content;
 
         } catch (URISyntaxException e){
             throw new RuntimeException(e);
@@ -80,6 +88,12 @@ public class ChatGPT {
        int end = response.indexOf("\"", start);
 
        return response.substring(start, end);
+   }
+
+   public static GPTResponse getResponse(String response) {
+        Gson gson = new Gson();
+        return gson.fromJson(response, GPTResponse.class);
+
    }
 
 
