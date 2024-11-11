@@ -5,6 +5,9 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 
 public class ChatGPT {
+    static String url = "https://api.openai.com/v1/chat/completions";
+    static String model = "chatgpt-4o-latest";
+    static String apiKey="";
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -32,13 +35,6 @@ public class ChatGPT {
     }
  	
     public static String nextChat(String systemBehavior, String prompt) {
-        String url = "https://api.openai.com/v1/chat/completions";
-
-        String apiKey="";
-        //String model = "gpt-3.5-turbo";
-        String model = "gpt-4o";
-
-
         try {
             URL obj = new URI(url).toURL();
             HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
@@ -68,9 +64,7 @@ public class ChatGPT {
             br.close();
 
             System.out.println(getResponse(response.toString()).choices[0].message.role);
-            System.out.println(getResponse(response.toString()).choices[0].finishReason);
-            
-            
+            System.out.println(getResponse(response.toString()).choices[0].finishReason);    
 
             //return getGPTResponse(response.toString());
             return getResponse(response.toString()).choices[0].message.content;
@@ -94,8 +88,6 @@ public class ChatGPT {
         Gson gson = new Gson();
         return gson.fromJson(response, GPTResponse.class);
 
-   }
-
-
+   }    
 }
 
