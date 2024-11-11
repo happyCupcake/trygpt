@@ -5,13 +5,13 @@ The next iteration will focus on using the Chat API
 
 ### Compile ###
 ```
-javac -cp /home/yogaworker/Downloads/gson-2.11.0.jar *.java 
+javac -cp /home/happyCupcake/Downloads/gson-2.11.0.jar *.java 
 ```
 
 ### Run ###
 
 ```
-java -cp .:/home/yogaworker/Downloads/gson-2.11.0.jar
+java -cp .:/home/happyCupcake/Downloads/gson-2.11.0.jar
 Start chatting! Type 'exit' to end the chat.
 **Please briefly describe the persona of the chatbot:**
 Offer suggestions like a lawyer who specializes in real estate
