@@ -11,7 +11,7 @@ javac -cp /home/happyCupcake/Downloads/gson-2.11.0.jar *.java
 ### Run ###
 
 ```
-java -cp .:/home/happyCupcake/Downloads/gson-2.11.0.jar
+java -cp .:/home/happyCupcake/Downloads/gson-2.11.0.jar ChatGPT
 Start chatting! Type 'exit' to end the chat.
 **Please briefly describe the persona of the chatbot:**
 Offer suggestions like a lawyer who specializes in real estate

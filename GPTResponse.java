@@ -9,8 +9,3 @@ class GPTChoice {
     GPTMessage message;
     
 }
-
-class GPTMessage {
-     String content;
-     String role;
-}
