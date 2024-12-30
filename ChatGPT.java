@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.google.gson.Gson;
 
@@ -16,6 +18,11 @@ public class ChatGPT {
     //static String model = "o1-preview";
     //static String model = "chatgpt-4o-latest";
     static String apiKey="";
+
+
+    // Keep track of conversation history
+    static List<GPTMessage> conversationHistory = new ArrayList<>();
+    static final int MAX_HISTORY = 4;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -44,20 +51,34 @@ public class ChatGPT {
  	
     public static String nextChat(String systemBehavior, String prompt) {
         try {
+            List<GPTMessage> messagesToSend = new ArrayList<>();
+
+            // Always include System message as the first message
+            messagesToSend.add(new GPTMessage("system", systemBehavior));
+
+            // Include last four messages in the conversation history as context for the AI Bot
+            // The last four includes two back-and-forth exchanges from user and bot
+            // The right role is automatically included in the history
+            if (!conversationHistory.isEmpty()) {
+                int historyStart = Math.max(0, conversationHistory.size() - MAX_HISTORY);
+                messagesToSend.addAll(conversationHistory.subList(historyStart, conversationHistory.size()));
+            }
+            
+            // After the system behavior and some context, lets include the current user message
+            GPTMessage userMessage = new GPTMessage("user", prompt);
+            messagesToSend.add(userMessage);
+            
+
             URL obj = new URI(url).toURL();
             HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
             connection.setRequestProperty("Authorization", "Bearer " + apiKey);
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestMethod("POST");
 
-            // Create both messages using GPTMessage class
-            GPTMessage systemMessage = new GPTMessage("system", systemBehavior);
-            GPTMessage userMessage = new GPTMessage("user", prompt);
-            
             // Create request structure
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("model", model);
-            requestBody.put("messages", Arrays.asList(systemMessage, userMessage));
+            requestBody.put("messages", messagesToSend);
             
             // Convert to JSON using Gson
             Gson gson = new Gson();
@@ -81,11 +102,28 @@ public class ChatGPT {
             }
             br.close();
 
-            System.out.println(getResponse(response.toString()).choices[0].message.GetRole());
-            System.out.println(getResponse(response.toString()).choices[0].finishReason);    
+            
+            // Get response from API
+            GPTResponse gptResponse = getResponse(response.toString());
+            GPTMessage assistantMessage = gptResponse.choices[0].message;
 
-            //return getGPTResponse(response.toString());
-            return getResponse(response.toString()).choices[0].message.GetContent();
+            // Add both the current user message and the corresponding AI response to history in the end
+            conversationHistory.add(userMessage);        // Add user message
+            conversationHistory.add(assistantMessage);   // Add bot response
+
+
+            // Trim history if needed
+            if (conversationHistory.size() > MAX_HISTORY) {
+                conversationHistory = new ArrayList<>(
+                    conversationHistory.subList(
+                        conversationHistory.size() - MAX_HISTORY, 
+                        conversationHistory.size()
+                    )
+                );
+            }
+
+            
+            return assistantMessage.GetContent();
 
         } catch (URISyntaxException e){
             throw new RuntimeException(e);
